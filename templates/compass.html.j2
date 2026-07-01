@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --paper: #f4f3ef;
+    --ink: #252525;
+    --muted: #6e6a64;
+    --line: #252525;
+    --soft-line: #c9c5bd;
+    --panel: #fbfaf7;
+    --rail: #2f2d2a;
+    --up: #16834a;
+    --down: #c83232;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #111;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .compass-page {
+    width: 1080px;
+    min-height: 1500px;
+    padding: 46px;
+    background: #111;
+  }
+
+  .compass-market-report {
+    min-height: 1408px;
+    background: var(--paper);
+    padding: 36px 42px 34px;
+  }
+
+  .kicker-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 720;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--soft-line);
+  }
+
+  .header-grid {
+    display: grid;
+    grid-template-columns: 0.92fr 1.45fr;
+    gap: 34px;
+    padding: 28px 0 20px;
+    align-items: start;
+  }
+
+  .title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 43px;
+    line-height: 1.05;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .style-note {
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .brief-copy {
+    font-size: 16px;
+    line-height: 1.42;
+    color: var(--ink);
+  }
+
+  .meta-line {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .change-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    overflow: hidden;
+    border-radius: 38px;
+    background: transparent;
+    color: var(--ink);
+    margin: 12px 0 26px;
+    border: 2px solid var(--line);
+  }
+
+  .strip-item {
+    min-height: 102px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    padding: 18px 12px;
+    border-right: 1px solid var(--soft-line);
+    text-align: center;
+  }
+
+  .strip-item:last-child { border-right: 0; }
+  .strip-change { font-size: 30px; line-height: 1; font-weight: 820; }
+  .strip-label { font-size: 12px; line-height: 1.2; font-weight: 680; color: var(--ink); }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 860;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ledger {
+    border-top: 1px solid var(--line);
+  }
+
+  .ledger-row {
+    display: grid;
+    grid-template-columns: 1.05fr 0.9fr 0.9fr;
+    gap: 22px;
+    align-items: center;
+    min-height: 76px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ledger-name {
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .value-block .value {
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 440;
+  }
+
+  .value-block .sub {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .change {
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 520;
+    text-align: right;
+  }
+
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.04fr 0.96fr;
+    gap: 28px;
+    margin-top: 26px;
+  }
+
+  .panel {
+    background: transparent;
+  }
+
+  .panel-head {
+    padding-bottom: 9px;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 14px;
+  }
+
+  .recap-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    line-height: 1.35;
+    font-style: italic;
+  }
+
+  .headline-list {
+    list-style: none;
+    border-top: 1px solid var(--soft-line);
+  }
+
+  .headline-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--soft-line);
+    font-size: 15px;
+    line-height: 1.34;
+  }
+
+  .asset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 30px;
+  }
+
+  .mini-ledger {
+    border-top: 1px solid var(--line);
+  }
+
+  .asset-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    align-items: baseline;
+    min-height: 54px;
+    border-bottom: 1px solid var(--soft-line);
+  }
+
+  .asset-name {
+    font-size: 13px;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .asset-value {
+    font-size: 24px;
+    font-weight: 430;
+    white-space: nowrap;
+  }
+
+  .asset-change {
+    min-width: 82px;
+    font-size: 18px;
+    font-weight: 780;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .movers-section {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 2px solid var(--line);
+  }
+
+  .movers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 14px;
+  }
+
+  .mover-row {
+    display: grid;
+    grid-template-columns: 76px 1fr 96px;
+    gap: 12px;
+    align-items: center;
+    min-height: 54px;
+    border-bottom: 1px solid var(--soft-line);
+  }
+
+  .symbol {
+    font-size: 22px;
+    font-weight: 860;
+  }
+
+  .company {
+    min-width: 0;
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mover-change {
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 820;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 28px;
+    align-items: end;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--soft-line);
+  }
+
+  .brand {
+    font-size: 23px;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .disclaimer {
+    max-width: 520px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.35;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+<div class="compass-page">
+  <article class="compass-market-report">
+    <div class="kicker-row">
+      <span>Market Session / {{ date_display }}</span>
+      <span>{{ brand_name }}</span>
+    </div>
+
+    <header class="header-grid">
+      <div>
+        <h1 class="title">Fred US<br>Market Brief</h1>
+        <div class="style-note">Compass-Style Market Brief</div>
+      </div>
+
+      <div>
+        <div class="meta-line">{{ date_display }} / {{ brand_name }}</div>
+        {% if narrative_text %}<p class="brief-copy">{{ narrative_text }}</p>{% endif %}
+      </div>
+
+    </header>
+
+    <aside class="change-strip outlined">
+      {% for i in indices %}
+      <div class="strip-item">
+        <div class="strip-change {{ i.cls }}">{{ i.change_str }}</div>
+        <div class="strip-label">{{ i.name }}</div>
+      </div>
+      {% endfor %}
+      {% for a in crypto[:2] %}
+      <div class="strip-item">
+        <div class="strip-change {{ a.cls }}">{{ a.change_str }}</div>
+        <div class="strip-label">{{ a.name }}</div>
+      </div>
+      {% endfor %}
+    </aside>
+
+    {% if indices %}
+    <section>
+      <div class="panel-head"><div class="section-label">Major Indices</div></div>
+      <div class="ledger">
+        {% for i in indices %}
+        <div class="ledger-row">
+          <div class="ledger-name">{{ i.name }}</div>
+          <div class="value-block"><div class="value">{{ i.price_str }}</div><div class="sub">Latest Level</div></div>
+          <div class="change {{ i.cls }}">{{ i.change_str }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="two-col">
+      {% if narrative_text %}
+      <div class="panel">
+        <div class="panel-head"><div class="section-label">Market Recap</div></div>
+        <p class="recap-text">{{ narrative_text }}</p>
+      </div>
+      {% endif %}
+
+      {% if headlines %}
+      <div class="panel">
+        <div class="panel-head"><div class="section-label">Headlines</div></div>
+        <ul class="headline-list">
+          {% for h in headlines[:3] %}<li>{{ h.title }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="asset-grid">
+      {% if crypto %}
+      <div>
+        <div class="panel-head"><div class="section-label">Crypto</div></div>
+        <div class="mini-ledger">
+          {% for a in crypto %}
+          <div class="asset-row">
+            <div class="asset-name">{{ a.name }}</div>
+            <div class="asset-value">{{ a.value_str }}</div>
+            <div class="asset-change {{ a.cls }}">{{ a.change_str }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if commodities %}
+      <div>
+        <div class="panel-head"><div class="section-label">Commodities &amp; Macro</div></div>
+        <div class="mini-ledger">
+          {% for a in commodities %}
+          <div class="asset-row">
+            <div class="asset-name">{{ a.name }}</div>
+            <div class="asset-value">{{ a.value_str }}</div>
+            <div class="asset-change {{ a.cls }}">{{ a.change_str }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </section>
+
+    {% if gainers or losers %}
+    <section class="movers-section">
+      <div class="section-label">Top Movers</div>
+      <div class="movers-grid">
+        <div>
+          <div class="panel-head"><div class="section-label">Gainers</div></div>
+          {% for m in gainers %}
+          <div class="mover-row">
+            <div class="symbol">{{ m.symbol }}</div>
+            <div class="company">{{ m.name }}</div>
+            <div class="mover-change up">{{ m.change_str }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        <div>
+          <div class="panel-head"><div class="section-label">Losers</div></div>
+          {% for m in losers %}
+          <div class="mover-row">
+            <div class="symbol">{{ m.symbol }}</div>
+            <div class="company">{{ m.name }}</div>
+            <div class="mover-change down">{{ m.change_str }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <footer class="footer">
+      <div class="brand">{{ brand_name }}</div>
+      <div class="disclaimer">{{ disclaimer }}</div>
+    </footer>
+  </article>
+</div>
+</body>
+</html>

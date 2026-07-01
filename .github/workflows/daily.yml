@@ -1,0 +1,45 @@
+name: Fred US Market Brief
+
+on:
+  schedule:
+    # 00:00 UTC ≈ 08:00 SGT/HKT — the prior US session has fully closed.
+    # (GitHub cron is UTC and may run a few minutes late under load.)
+    - cron: "0 0 * * *"
+  workflow_dispatch: {} # lets you trigger a live run on demand (great for demos)
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Generate and broadcast the infographic
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }} # DM, group, or channel id
+          WHATSAPP_ACCESS_TOKEN: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
+          WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+          WHATSAPP_RECIPIENT: ${{ secrets.WHATSAPP_RECIPIENT }} # your number, E.164 digits, no '+'
+          AGENT_NAME: ${{ vars.AGENT_NAME }} # optional repo variable
+        run: python -m src.main
+
+      - name: Upload infographic as a build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: infographic
+          path: out/*.png
+          if-no-files-found: ignore

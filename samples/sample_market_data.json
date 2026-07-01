@@ -1,0 +1,41 @@
+{
+  "date": "2026-05-29",
+  "indices": [
+    { "name": "S&P 500", "symbol": "^GSPC", "price": 5930.12, "change_pct": 0.81 },
+    { "name": "Nasdaq", "symbol": "^IXIC", "price": 19210.45, "change_pct": 1.10 },
+    { "name": "Dow Jones", "symbol": "^DJI", "price": 42560.30, "change_pct": -0.15 }
+  ],
+  "crypto": [
+    { "name": "Bitcoin", "symbol": "BTC-USD", "value": 105230.0, "change_pct": 2.14, "change_abs": 2204.0, "fmt": "usd_large" },
+    { "name": "Ethereum", "symbol": "ETH-USD", "value": 3812.5, "change_pct": 3.02, "change_abs": 111.7, "fmt": "usd_large" }
+  ],
+  "commodities": [
+    { "name": "Gold", "symbol": "GC=F", "value": 2451.3, "change_pct": 0.45, "change_abs": 10.9, "fmt": "usd" },
+    { "name": "Silver", "symbol": "SI=F", "value": 31.08, "change_pct": -0.62, "change_abs": -0.19, "fmt": "usd" },
+    { "name": "Crude Oil (WTI)", "symbol": "CL=F", "value": 74.2, "change_pct": -1.05, "change_abs": -0.79, "fmt": "usd" },
+    { "name": "US 10Y Yield", "symbol": "^TNX", "value": 4.3, "change_pct": 1.18, "change_abs": 0.05, "fmt": "yield" },
+    { "name": "US Dollar Index", "symbol": "DX-Y.NYB", "value": 104.52, "change_pct": 0.21, "change_abs": 0.22, "fmt": "level" },
+    { "name": "Volatility (VIX)", "symbol": "^VIX", "value": 15.4, "change_pct": -3.75, "change_abs": -0.6, "fmt": "level" }
+  ],
+  "gainers": [
+    { "symbol": "NVDA", "name": "NVIDIA Corporation", "price": 1180.40, "change_pct": 5.21 },
+    { "symbol": "AVGO", "name": "Broadcom Inc.", "price": 1655.10, "change_pct": 4.10 },
+    { "symbol": "AMD", "name": "Advanced Micro Devices", "price": 182.55, "change_pct": 3.88 },
+    { "symbol": "TSLA", "name": "Tesla, Inc.", "price": 352.20, "change_pct": 3.05 },
+    { "symbol": "META", "name": "Meta Platforms, Inc.", "price": 615.70, "change_pct": 2.74 }
+  ],
+  "losers": [
+    { "symbol": "XOM", "name": "Exxon Mobil Corporation", "price": 108.90, "change_pct": -2.95 },
+    { "symbol": "CVX", "name": "Chevron Corporation", "price": 152.30, "change_pct": -2.41 },
+    { "symbol": "PG", "name": "Procter & Gamble", "price": 162.05, "change_pct": -1.88 },
+    { "symbol": "KO", "name": "Coca-Cola Company", "price": 61.40, "change_pct": -1.52 },
+    { "symbol": "DUK", "name": "Duke Energy Corporation", "price": 110.25, "change_pct": -1.33 }
+  ],
+  "narrative": {
+    "summary_text": "US stocks closed mostly higher Friday as a rally in megacap technology and chipmakers lifted the S&P 500 and Nasdaq, while the Dow slipped as energy names fell with crude. Semiconductors led the advance after upbeat AI-demand commentary, offsetting weakness in defensive utilities and staples.",
+    "headlines": [
+      { "title": "Tech rally lifts S&P 500, Nasdaq as chip stocks surge", "url": "https://example.com/markets/tech-rally" },
+      { "title": "Energy shares slide as crude oil retreats", "url": "https://example.com/markets/energy-slide" }
+    ]
+  }
+}

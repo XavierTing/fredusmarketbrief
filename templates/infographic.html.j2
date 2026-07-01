@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --page: #e8eefc;
+    --card: #fbfcff;
+    --ink: #1f2736;
+    --navy: #31558f;
+    --muted: #667286;
+    --rule: #bfc7d4;
+    --soft-rule: #e4e8f0;
+    --up: #16a05a;
+    --down: #df3030;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .report-page {
+    width: 1080px;
+    min-height: 1500px;
+    background: var(--page);
+    padding: 90px 108px 76px;
+  }
+
+  .report-header {
+    display: grid;
+    grid-template-columns: 1.35fr 0.85fr;
+    gap: 78px;
+    align-items: start;
+    margin-bottom: 52px;
+  }
+
+  .report-title {
+    color: var(--navy);
+    font-size: 58px;
+    line-height: 1.12;
+    font-weight: 820;
+    text-transform: uppercase;
+    letter-spacing: 0;
+  }
+
+  .report-subtitle {
+    margin-top: 18px;
+    font-size: 24px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+
+  .metadata {
+    display: grid;
+    gap: 32px;
+    padding-top: 4px;
+  }
+
+  .meta-label {
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .meta-value {
+    color: var(--navy);
+    font-size: 23px;
+    font-weight: 760;
+    line-height: 1.25;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--rule);
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .stack {
+    display: grid;
+    gap: 26px;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 28px;
+    box-shadow: 0 1px 0 rgba(31,39,54,0.04);
+  }
+
+  .section-heading,
+  .card-heading {
+    color: var(--navy);
+    font-size: 21px;
+    font-weight: 780;
+    line-height: 1.25;
+    margin-bottom: 18px;
+  }
+
+  .icon-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--navy);
+    font-size: 21px;
+    font-weight: 780;
+    line-height: 1.25;
+    margin-bottom: 18px;
+  }
+
+  .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    background: var(--navy);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 820;
+  }
+
+  .section-label {
+    color: var(--navy);
+    font-size: 19px;
+    font-weight: 790;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+
+  .major-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .index-card {
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .metric-name {
+    color: var(--muted);
+    font-size: 19px;
+    font-weight: 720;
+    line-height: 1.25;
+    margin-bottom: 9px;
+  }
+
+  .metric-value {
+    color: #101827;
+    font-size: 38px;
+    font-weight: 820;
+    line-height: 1.05;
+  }
+
+  .metric-change {
+    margin-top: 9px;
+    font-size: 24px;
+    font-weight: 820;
+    line-height: 1.1;
+  }
+
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+
+  .recap-text {
+    color: var(--ink);
+    font-size: 23px;
+    line-height: 1.4;
+  }
+
+  .headlines {
+    list-style: none;
+  }
+
+  .headlines li {
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.32;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .headlines li:first-child { padding-top: 0; }
+  .headlines li:last-child { border-bottom: 0; padding-bottom: 0; }
+
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .asset-card {
+    min-height: 126px;
+    padding: 24px 28px;
+  }
+
+  .asset-card .metric-value {
+    font-size: 34px;
+  }
+
+  .asset-card .metric-change {
+    font-size: 22px;
+  }
+
+  .table-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px;
+  }
+
+  .mover-table {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .table-head {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .table-head.gain { background: var(--up); }
+  .table-head.lose { background: #df2424; }
+
+  .mrow {
+    display: grid;
+    grid-template-columns: 76px 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--soft-rule);
+  }
+
+  .mrow:last-child { border-bottom: 0; }
+
+  .sym {
+    color: #111827;
+    font-size: 24px;
+    font-weight: 820;
+    line-height: 1.1;
+  }
+
+  .nm {
+    min-width: 0;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pct {
+    font-size: 21px;
+    font-weight: 820;
+    line-height: 1.15;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .footer {
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 2px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .agent {
+    color: #101827;
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .disc {
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.35;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+<div class="report-page">
+  <header class="report-header">
+    <div>
+      <h1 class="report-title">FRED US MARKET BRIEF</h1>
+      <div class="report-subtitle">Major indices, cross-asset pulse &amp; top movers</div>
+    </div>
+    <div class="metadata">
+      <div>
+        <div class="meta-label">Prepared For:</div>
+        <div class="meta-value">{{ brand_name }}</div>
+      </div>
+      <div>
+        <div class="meta-label">Market Date:</div>
+        <div class="meta-value">{{ date_display }}</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-grid">
+    {% if indices %}
+    <section class="full-width">
+      <div class="section-label">Major Indices</div>
+      <div class="major-grid">
+        {% for i in indices %}
+        <div class="card index-card">
+          <div class="metric-name">{{ i.name }}</div>
+          <div class="metric-value">{{ i.price_str }}</div>
+          <div class="metric-change {{ i.cls }}">{{ i.change_str }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if narrative_text %}
+    <section class="card">
+      <div class="icon-heading"><span class="icon">$</span><span>Market Recap</span></div>
+      <p class="recap-text">{{ narrative_text }}</p>
+    </section>
+    {% endif %}
+
+    {% if headlines %}
+    <aside class="card">
+      <div class="icon-heading"><span class="icon">%</span><span>Headlines</span></div>
+      <ul class="headlines">
+        {% for h in headlines[:3] %}<li>{{ h.title }}</li>{% endfor %}
+      </ul>
+    </aside>
+    {% endif %}
+
+    {% if crypto %}
+    <section class="full-width">
+      <div class="section-label">Crypto</div>
+      <div class="asset-grid">
+        {% for a in crypto %}
+        <div class="card asset-card">
+          <div class="metric-name">{{ a.name }}</div>
+          <div class="metric-value">{{ a.value_str }}</div>
+          <div class="metric-change {{ a.cls }}">{{ a.change_str }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if commodities %}
+    <section class="full-width">
+      <div class="section-label">Commodities &amp; Macro</div>
+      <div class="macro-grid">
+        {% for a in commodities %}
+        <div class="card asset-card">
+          <div class="metric-name">{{ a.name }}</div>
+          <div class="metric-value">{{ a.value_str }}</div>
+          <div class="metric-change {{ a.cls }}">{{ a.change_str }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if gainers or losers %}
+    <section class="full-width">
+      <div class="section-label">Top Movers</div>
+      <div class="table-grid">
+        <div class="card mover-table">
+          <div class="table-head gain">+ Gainers</div>
+          {% for m in gainers %}
+          <div class="mrow">
+            <span class="sym">{{ m.symbol }}</span>
+            <span class="nm">{{ m.name }}</span>
+            <span class="pct up">{{ m.change_str }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="card mover-table">
+          <div class="table-head lose">- Losers</div>
+          {% for m in losers %}
+          <div class="mrow">
+            <span class="sym">{{ m.symbol }}</span>
+            <span class="nm">{{ m.name }}</span>
+            <span class="pct down">{{ m.change_str }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+  </main>
+
+  <footer class="footer">
+    <div class="agent">{{ brand_name }}</div>
+    <div class="disc">{{ disclaimer }}</div>
+  </footer>
+</div>
+</body>
+</html>
