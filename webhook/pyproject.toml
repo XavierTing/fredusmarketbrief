@@ -1,0 +1,6 @@
+# Vercel's Python runtime (CLI 54+) requires the serverless entrypoint declared
+# explicitly rather than auto-detecting the `handler` class. Deps still come from
+# webhook/requirements.txt. This file is only read when Vercel's Root Directory is
+# set to `webhook`.
+[tool.vercel]
+entrypoint = "api.telegram_webhook:handler"
