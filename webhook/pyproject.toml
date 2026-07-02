@@ -1,6 +1,19 @@
-# Vercel's Python runtime (CLI 54+) requires the serverless entrypoint declared
-# explicitly rather than auto-detecting the `handler` class. Deps still come from
-# webhook/requirements.txt. This file is only read when Vercel's Root Directory is
-# set to `webhook`.
+# Vercel's Python runtime (CLI 54+) installs deps with uv when a pyproject.toml is
+# present, so a valid [project] table is required. Deps live here now (requests);
+# webhook/requirements.txt is redundant but harmless. `package = false` tells uv not
+# to try to build this folder as an installable package. The [tool.vercel] entrypoint
+# points Vercel at the BaseHTTPRequestHandler `handler` (the file name isn't one of
+# Vercel's auto-detected entrypoint names).
+[project]
+name = "fred-market-webhook"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.31.0",
+]
+
+[tool.uv]
+package = false
+
 [tool.vercel]
 entrypoint = "api.telegram_webhook:handler"
