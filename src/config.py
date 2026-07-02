@@ -93,3 +93,29 @@ def get_whatsapp_recipient() -> str:
     if not recipient:
         raise RuntimeError("WHATSAPP_RECIPIENT is not set")
     return recipient
+
+
+def get_supabase_url() -> str:
+    url = os.environ.get("SUPABASE_URL")
+    if not url:
+        raise RuntimeError("SUPABASE_URL is not set")
+    return url.rstrip("/")
+
+
+def get_supabase_service_key() -> str:
+    key = os.environ.get("SUPABASE_SERVICE_KEY")
+    if not key:
+        raise RuntimeError("SUPABASE_SERVICE_KEY is not set")
+    return key
+
+
+def get_telegram_webhook_secret() -> str:
+    secret = os.environ.get("TELEGRAM_WEBHOOK_SECRET")
+    if not secret:
+        raise RuntimeError("TELEGRAM_WEBHOOK_SECRET is not set")
+    return secret
+
+
+def supabase_configured() -> bool:
+    """True when both Supabase env vars are present (enables the broadcast path)."""
+    return bool(os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_SERVICE_KEY"))
