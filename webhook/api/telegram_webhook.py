@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from http.server import BaseHTTPRequestHandler
 
 import requests
@@ -83,6 +84,9 @@ def _tg(method: str) -> str:
 
 
 def _send_message(chat_id, text: str) -> None:
+    # Best-effort (no raise_for_status): a lost welcome/goodbye must not abort the
+    # handler or roll back a successful DB write. The DB writes (_upsert/_deactivate)
+    # DO raise, so we never message "you're subscribed" when the write actually failed.
     requests.post(_tg("sendMessage"), json={"chat_id": chat_id, "text": text}, timeout=_TIMEOUT)
 
 
@@ -135,8 +139,9 @@ class handler(BaseHTTPRequestHandler):  # Vercel entrypoint
         raw = self.rfile.read(length) if length else b"{}"
         try:
             handle_update(json.loads(raw))
-        except Exception:  # noqa: BLE001 - never 500 back to Telegram (avoids retry storms)
-            pass
+        except Exception as exc:  # noqa: BLE001 - never 500 back to Telegram (avoids retry storms)
+            # Swallow to keep returning 200, but log to stderr so Vercel captures it.
+            print(f"webhook: handle_update failed: {exc!r}", file=sys.stderr)
         self.send_response(200)
         self.end_headers()
 
