@@ -131,7 +131,7 @@ def run(mock: bool = False, dry_run: bool = False, out: str | None = None, style
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Fred US Market Brief — US market infographic → Telegram/WhatsApp")
+    parser = argparse.ArgumentParser(description="Xavier US Market Brief — US market infographic → Telegram/WhatsApp")
     parser.add_argument("--mock", action="store_true", help="Use bundled sample data (no network/keys)")
     parser.add_argument("--dry-run", action="store_true", help="Render but do not send to Telegram")
     parser.add_argument("--out", default=None, help="Output PNG path")

@@ -5,7 +5,7 @@
 # points Vercel at the BaseHTTPRequestHandler `handler` (the file name isn't one of
 # Vercel's auto-detected entrypoint names).
 [project]
-name = "fred-market-webhook"
+name = "xavier-market-webhook"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [

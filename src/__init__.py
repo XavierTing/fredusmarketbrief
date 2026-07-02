@@ -1,1 +1,1 @@
-"""Fred US Market Brief — US market infographic → Telegram/WhatsApp pipeline."""
+"""Xavier US Market Brief — US market infographic → Telegram/WhatsApp pipeline."""

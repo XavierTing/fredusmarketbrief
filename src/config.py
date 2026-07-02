@@ -44,7 +44,7 @@ WHATSAPP_API_VERSION = "v22.0"
 
 # Branding (placeholder; override AGENT_NAME via env).
 AGENT_NAME = os.environ.get("AGENT_NAME", "Jane Doe, Financial Services")
-BRAND_TAGLINE = "Fred US Market Brief"
+BRAND_TAGLINE = "Xavier US Market Brief"
 DISCLAIMER = "For informational purposes only. Not financial advice. Demo."
 
 

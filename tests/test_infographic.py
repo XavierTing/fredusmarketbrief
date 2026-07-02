@@ -52,7 +52,7 @@ def test_render_html_uses_report_style_structure():
     html = render_html(load_mock(), style="report")
     assert "report-page" in html
     assert "report-header" in html
-    assert "FRED US MARKET BRIEF" in html
+    assert "XAVIER US MARKET BRIEF" in html
     assert "masthead" not in html
 
 

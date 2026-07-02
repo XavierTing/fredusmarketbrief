@@ -1,4 +1,4 @@
-# Fred US Market Brief → Telegram
+# Xavier US Market Brief → Telegram
 
 A fully automated daily pipeline that fetches the day's US equity market data,
 has Claude write a grounded narrative + headlines, renders a branded infographic,
