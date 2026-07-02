@@ -7,3 +7,4 @@ python-dotenv>=1.0.0
 
 # dev / test
 pytest>=8.0.0
+segno>=1.6.0  # QR generation for scripts/make_qr.py
