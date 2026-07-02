@@ -129,9 +129,15 @@ def handle_update(update: dict) -> None:
     # anything else: ignore
 
 
+def _authorized(provided: str | None) -> bool:
+    """True only when a non-empty secret is configured AND the header matches it."""
+    expected = os.environ.get("TELEGRAM_WEBHOOK_SECRET")
+    return bool(expected) and provided == expected
+
+
 class handler(BaseHTTPRequestHandler):  # Vercel entrypoint
     def do_POST(self):  # noqa: N802
-        if self.headers.get("X-Telegram-Bot-Api-Secret-Token") != os.environ.get("TELEGRAM_WEBHOOK_SECRET"):
+        if not _authorized(self.headers.get("X-Telegram-Bot-Api-Secret-Token")):
             self.send_response(403)
             self.end_headers()
             return

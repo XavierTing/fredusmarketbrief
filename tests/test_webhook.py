@@ -63,3 +63,14 @@ def test_unknown_text_ignored(mod, monkeypatch):
     monkeypatch.setattr(mod, "_send_message", lambda cid, text: called.append("m"))
     mod.handle_update({"message": {"chat": {"id": 1}, "from": {}, "text": "hello"}})
     assert called == []
+
+
+def test_authorized_requires_configured_secret(mod, monkeypatch):
+    # Correct secret configured (fixture sets it to "s"):
+    assert mod._authorized("s") is True
+    assert mod._authorized("wrong") is False
+    assert mod._authorized(None) is False
+    # Fail closed: if no secret is configured, reject everything (even a None match).
+    monkeypatch.delenv("TELEGRAM_WEBHOOK_SECRET", raising=False)
+    assert mod._authorized(None) is False
+    assert mod._authorized("anything") is False
