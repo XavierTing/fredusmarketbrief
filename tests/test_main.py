@@ -131,3 +131,25 @@ def test_broadcast_falls_back_to_single_chat_when_unconfigured(monkeypatch, tmp_
                         lambda path, caption="", chat_id=None: calls.append(chat_id))
     main_mod._broadcast_telegram(out, caption="cap")
     assert calls == [None]  # single-chat send uses the env default (chat_id None)
+
+
+def test_broadcast_falls_back_when_list_active_raises(monkeypatch, tmp_path):
+    monkeypatch.setenv("SUPABASE_URL", "https://x.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_KEY", "k")
+    out = tmp_path / "i.png"
+    out.write_bytes(b"PNG")
+
+    monkeypatch.setattr(main_mod.storage, "upload_latest", lambda p: None)
+
+    def boom():
+        raise RuntimeError("supabase down")
+
+    monkeypatch.setattr(main_mod.subscribers, "list_active", boom)
+
+    calls = []
+    monkeypatch.setattr(
+        main_mod, "telegram_send_photo",
+        lambda path, caption="", chat_id=None: calls.append(chat_id),
+    )
+    main_mod._broadcast_telegram(out, caption="cap")
+    assert calls == [None]  # Supabase configured but unreachable → single-chat fallback
