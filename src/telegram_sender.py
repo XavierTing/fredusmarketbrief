@@ -21,11 +21,23 @@ log = logging.getLogger(__name__)
 _API = "https://api.telegram.org/bot{token}/sendPhoto"
 _CAPTION_LIMIT = 1024
 
+# 400 (chat not found) and 403 (blocked / deactivated) mean the recipient is
+# permanently unreachable — the broadcast prunes them instead of retrying.
+_PERMANENT_STATUS = {400, 403}
 
-def send_photo(image_path: str | Path, caption: str = "") -> dict:
-    """Send a photo to the configured channel. Returns the Telegram API result."""
+
+class TelegramBlockedError(RuntimeError):
+    """Recipient can no longer be reached (blocked the bot, deactivated, or gone)."""
+
+
+def send_photo(image_path: str | Path, caption: str = "", chat_id: str | int | None = None) -> dict:
+    """Send a photo to a chat. Defaults to the configured chat_id when none is given.
+
+    Raises TelegramBlockedError (no retry) when the recipient is unreachable, so
+    the broadcast can prune them. Retries once on transient errors, then re-raises.
+    """
     token = get_telegram_token()
-    chat_id = get_telegram_chat_id()
+    chat_id = chat_id if chat_id is not None else get_telegram_chat_id()
     url = _API.format(token=token)
     caption = caption[:_CAPTION_LIMIT]
 
@@ -43,7 +55,11 @@ def send_photo(image_path: str | Path, caption: str = "") -> dict:
             if resp.status_code == 200 and body.get("ok"):
                 log.info("Sent infographic to %s", chat_id)
                 return body
+            if resp.status_code in _PERMANENT_STATUS:
+                raise TelegramBlockedError(f"{resp.status_code}: {body.get('description')}")
             raise RuntimeError(f"Telegram API error {resp.status_code}: {resp.text}")
+        except TelegramBlockedError:
+            raise  # permanent — do not retry
         except Exception as exc:  # noqa: BLE001 - retry once, then re-raise
             last_exc = exc
             log.warning("sendPhoto attempt %d/2 failed: %s", attempt + 1, exc)
