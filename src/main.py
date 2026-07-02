@@ -15,20 +15,65 @@ import logging
 import sys
 from pathlib import Path
 
-from .config import AGENT_NAME
+from .config import AGENT_NAME, supabase_configured
 from .infographic import _date_display, render_png
 from .market_data import fetch_market_data, load_mock
 from .models import MarketSummary
 from .narrative import generate_narrative
-from .telegram_sender import send_photo as telegram_send_photo
+from . import storage, subscribers
+from .telegram_sender import TelegramBlockedError, send_photo as telegram_send_photo
 from .whatsapp_sender import send_photo as whatsapp_send_photo
 
 log = logging.getLogger("daily_brief")
 
+
+def _broadcast_telegram(out_path: Path, caption: str = "") -> None:
+    """Broadcast to every active subscriber; fall back to the single configured chat.
+
+    Best-effort uploads the PNG so the webhook can send new subscribers an instant
+    sample. Blocked recipients are pruned; other per-recipient errors are logged
+    and skipped. If Supabase is unconfigured or unreachable, sends to the legacy
+    single TELEGRAM_CHAT_ID so the brief still ships (graceful degradation).
+    """
+    try:
+        storage.upload_latest(out_path)
+    except Exception:  # noqa: BLE001 - sample upload is best-effort
+        log.exception("Failed to upload latest infographic to storage")
+
+    if supabase_configured():
+        try:
+            recipients = subscribers.list_active()
+        except Exception:  # noqa: BLE001 - degrade to single chat
+            log.exception("Failed to list subscribers; falling back to single chat")
+        else:
+            if not recipients:
+                log.info("No active subscribers; nothing to broadcast on Telegram")
+                return
+            sent = 0
+            for row in recipients:
+                chat_id = row["chat_id"]
+                try:
+                    telegram_send_photo(out_path, caption=caption, chat_id=chat_id)
+                    sent += 1
+                except TelegramBlockedError:
+                    log.info("Pruning unreachable subscriber %s", chat_id)
+                    try:
+                        subscribers.deactivate(chat_id)
+                    except Exception:  # noqa: BLE001
+                        log.exception("Failed to deactivate %s", chat_id)
+                except Exception:  # noqa: BLE001 - one recipient must not block others
+                    log.exception("Failed to send to subscriber %s", chat_id)
+            log.info("Broadcast to %d/%d subscribers", sent, len(recipients))
+            return
+
+    # Fallback: legacy single-chat send.
+    telegram_send_photo(out_path, caption=caption)
+
+
 # Delivery channels, each broadcast every run. Independent by design: a failure
 # in one (e.g. a closed WhatsApp 24h window) must not block the others.
 _CHANNELS = [
-    ("Telegram", telegram_send_photo),
+    ("Telegram", _broadcast_telegram),
     ("WhatsApp", whatsapp_send_photo),
 ]
 
