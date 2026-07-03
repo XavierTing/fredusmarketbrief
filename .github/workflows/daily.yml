@@ -10,7 +10,7 @@ on:
 jobs:
   send:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25 # room for up to 3 send attempts with 60s backoff between
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +36,22 @@ jobs:
           WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
           WHATSAPP_RECIPIENT: ${{ secrets.WHATSAPP_RECIPIENT }} # your number, E.164 digits, no '+'
           AGENT_NAME: ${{ vars.AGENT_NAME }} # optional repo variable
-        run: python -m src.main
+        # The cron runs once a day, so a single transient error (a Yahoo hiccup,
+        # a Chromium render blip, a momentary send failure) would otherwise mean
+        # no brief that day. Retry a few times so transient failures self-heal.
+        run: |
+          for attempt in 1 2 3; do
+            echo "::group::Attempt $attempt"
+            if python -m src.main; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "Attempt $attempt failed."
+            [ "$attempt" -lt 3 ] && { echo "Retrying in 60s..."; sleep 60; }
+          done
+          echo "All 3 attempts failed."
+          exit 1
 
       - name: Upload infographic as a build artifact
         if: always()
