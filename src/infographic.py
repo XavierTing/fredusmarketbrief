@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import logging
+import time
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -118,23 +119,48 @@ def render_html(summary: MarketSummary, style: str = "compass") -> str:
     return template.render(**build_context(summary))
 
 
-def render_png(summary: MarketSummary, out_path: str | Path, style: str = "compass") -> Path:
-    """Render the infographic to a PNG file. Returns the output path."""
+def _render_png_once(html: str, out_path: Path) -> None:
+    """Single Chromium render attempt. Closes the browser even on failure."""
     from playwright.sync_api import sync_playwright
 
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        try:
+            page = browser.new_page(
+                viewport={"width": _VIEWPORT_WIDTH, "height": 1500},
+                device_scale_factor=2,  # crisp on phone screens
+            )
+            page.set_content(html, wait_until="networkidle")
+            page.screenshot(path=str(out_path), full_page=True, type="png")
+        finally:
+            browser.close()
+
+
+def render_png(
+    summary: MarketSummary,
+    out_path: str | Path,
+    style: str = "compass",
+    attempts: int = 3,
+) -> Path:
+    """Render the infographic to a PNG file. Returns the output path.
+
+    Chromium can hiccup transiently (launch timeout, a slow ``networkidle``);
+    since the daily run happens once, retry a few times so a one-off render
+    blip self-heals instead of dropping that day's brief.
+    """
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     html = render_html(summary, style=style)
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(
-            viewport={"width": _VIEWPORT_WIDTH, "height": 1500},
-            device_scale_factor=2,  # crisp on phone screens
-        )
-        page.set_content(html, wait_until="networkidle")
-        page.screenshot(path=str(out_path), full_page=True, type="png")
-        browser.close()
+    for attempt in range(1, attempts + 1):
+        try:
+            _render_png_once(html, out_path)
+            break
+        except Exception:  # noqa: BLE001 - transient render failures are retried
+            if attempt == attempts:
+                raise
+            log.warning("Render attempt %d/%d failed; retrying", attempt, attempts, exc_info=True)
+            time.sleep(2 * attempt)  # brief linear backoff
 
     log.info("Wrote infographic to %s", out_path)
     return out_path
